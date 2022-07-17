@@ -1,9 +1,10 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+_.pytest_cache/
 .idea/
 *.py[cod]
 *$py.class
 
 # Project file
-logs/
-*nonpublish.py
+*.pth
+

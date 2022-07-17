@@ -10,7 +10,7 @@ def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
     for batch, (X, y) in enumerate(dataloader):
-        X, y = X.to(device), y.to(device)  # copy tensor from cpu to gpu
+        X, y = X.to(device), y.to(device)  # copy data from cpu to gpu
 
         # Compute prediction error
         pred = model(X)
@@ -33,7 +33,7 @@ def test(dataloader, model, loss_fn):
     test_loss, correct = 0, 0
     with torch.no_grad():
         for X, y in dataloader:
-            X, y = X.to(device), y.to(device)  # copy tensor from cpu to gpu
+            X, y = X.to(device), y.to(device)  # copy data from cpu to gpu
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     print(f"Using {device} device")
 
     # initialize model
-    model = NeuralNetwork().to(device)
+    model = NeuralNetwork().to(device)  # copy model from cpu to gpu
     print(model)
 
     # initialize optimizer

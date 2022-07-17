@@ -10,7 +10,7 @@ def train(dataloader, model, loss_fn, optimizer):
     size = len(dataloader.dataset)
     model.train()
     for batch, (X, y) in enumerate(dataloader):
-        X, y = X.to(device), y.to(device)  # copy tensor from cpu to gpu
+        X, y = X.to(device), y.to(device)  # copy data from cpu to gpu
 
         # Compute prediction error
         pred = model(X)
@@ -33,7 +33,7 @@ def test(dataloader, model, loss_fn):
     test_loss, correct = 0, 0
     with torch.no_grad():
         for X, y in dataloader:
-            X, y = X.to(device), y.to(device)  # copy tensor from cpu to gpu
+            X, y = X.to(device), y.to(device)  # copy data from cpu to gpu
             pred = model(X)
             test_loss += loss_fn(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
@@ -52,19 +52,23 @@ if __name__ == '__main__':
     train_dataloader = DataLoader(training_data, batch_size=batch_size)
     test_dataloader = DataLoader(test_data, batch_size=batch_size)
 
-    # Get cpu or gpu device for training.
-    device = "cuda" if torch.cuda.is_available() else "cpu"  # using GPU
-    print(f"Using {device} device")
+    # [*] Get multiple GPU device for training.
+    n_gpu = torch.cuda.device_count()
+    device = torch.device('cuda:0' if n_gpu > 0 else 'cpu')
+    device_ids = list(range(n_gpu))
 
     # initialize model
-    model = NeuralNetwork().to(device)
+    model = NeuralNetwork().to(device)  # copy model from cpu to gpu
+    # [*] copy model to multi-GPU
+    if len(device_ids) > 1:
+        model = torch.nn.DataParallel(model, device_ids=device_ids)
     print(model)
 
     # initialize optimizer
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
 
-    # train on single-GPU
+    # train on multiple-GPU
     epochs = 5
     for t in range(epochs):
         print(f"Epoch {t + 1}\n-------------------------------")

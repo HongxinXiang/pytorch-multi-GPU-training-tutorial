@@ -1,9 +1,29 @@
+import os
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision.transforms import ToTensor
 from model import NeuralNetwork
+
+# [*] Packages required to import distributed data parallelism
+import torch.distributed as dist
+import torch.multiprocessing as mp
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+
+# [*] Initialize the distributed process group
+def setup(rank, world_size):
+    # If it is running on a single machine, just fill in localhost or 127.0.0.1
+    os.environ['MASTER_ADDR'] = '192.168.1.105'
+    os.environ['MASTER_PORT'] = '12355'
+    # If the OS is macOS, use gloo instead of NCCL
+    dist.init_process_group(backend="NCCL", rank=rank, world_size=world_size)
+
+
+# [*] destroy process group
+def cleanup():
+    dist.destroy_process_group()
 
 
 def train(dataloader, model, loss_fn, optimizer):

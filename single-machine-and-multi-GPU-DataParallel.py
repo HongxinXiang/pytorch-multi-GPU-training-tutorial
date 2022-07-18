@@ -77,5 +77,10 @@ if __name__ == '__main__':
     print("Done!")
 
     # save model
-    torch.save(model.state_dict(), "model.pth")
+    # [*] save model with multi-GPU
+    if isinstance(model, torch.nn.DataParallel):
+        model_state_dict = model.module.state_dict()
+    else:
+        model_state_dict = model.state_dict()
+    torch.save(model_state_dict, "model.pth")
     print("Saved PyTorch Model State to model.pth")

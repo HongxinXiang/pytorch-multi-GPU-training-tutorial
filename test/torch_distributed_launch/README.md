@@ -58,7 +58,6 @@ after running dist.init_process_group()
 after running dist.init_process_group()
 after running dist.init_process_group()
 after running dist.init_process_group()
-
 ```
 
 **Machine 1:**

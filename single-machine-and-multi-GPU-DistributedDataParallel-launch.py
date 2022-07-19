@@ -43,11 +43,6 @@ def setup_DDP(backend="nccl", verbose=False):
     return rank, local_rank, word_size, device
 
 
-# [*] destroy process group
-def cleanup():
-    dist.destroy_process_group()
-
-
 def train(dataloader, model, loss_fn, optimizer, device):
     size = len(dataloader.dataset)
     model.train()

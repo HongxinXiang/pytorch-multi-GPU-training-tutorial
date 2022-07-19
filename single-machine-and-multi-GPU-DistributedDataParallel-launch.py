@@ -10,7 +10,7 @@ from model import NeuralNetwork
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
-
+from torch.utils.data.distributed import DistributedSampler
 
 """Start DDP code with "python -m torch.distributed.launch"
 """
@@ -33,14 +33,14 @@ def setup_DDP(backend="nccl", verbose=False):
     """
     rank = int(os.environ["RANK"])
     local_rank = int(os.environ["LOCAL_RANK"])
+    word_size = int(os.environ["WORLD_SIZE"])
     # If the OS is Windows or macOS, use gloo instead of nccl
     dist.init_process_group(backend=backend)
     # set distributed device
-    torch.cuda.set_device(local_rank)
     device = torch.device("cuda:{}".format(local_rank))
     if verbose:
-        print(f"[init] == local rank: {local_rank}, global rank: {rank} ==")
-    return rank, local_rank, device
+        print(f"local rank: {local_rank}, global rank: {rank}, world size: {word_size}")
+    return rank, local_rank, word_size, device
 
 
 # [*] destroy process group
@@ -48,7 +48,7 @@ def cleanup():
     dist.destroy_process_group()
 
 
-def train(dataloader, model, loss_fn, optimizer):
+def train(dataloader, model, loss_fn, optimizer, device):
     size = len(dataloader.dataset)
     model.train()
     for batch, (X, y) in enumerate(dataloader):
@@ -63,12 +63,13 @@ def train(dataloader, model, loss_fn, optimizer):
         loss.backward()
         optimizer.step()
 
-        if batch % 100 == 0:
+        # [*] only print log on rank 0
+        if dist.get_rank() == 0 and batch % 100 == 0:
             loss, current = loss.item(), batch * len(X)
             print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
 
 
-def test(dataloader, model, loss_fn):
+def test(dataloader, model, loss_fn, device):
     size = len(dataloader.dataset)
     num_batches = len(dataloader)
     model.eval()
@@ -81,29 +82,31 @@ def test(dataloader, model, loss_fn):
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
     test_loss /= num_batches
     correct /= size
-    print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+    # [*] only print log on rank 0
+    if dist.get_rank() == 0:
+        print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
 if __name__ == '__main__':
+    # [*] initialize the distributed process group and device
+    rank, local_rank, word_size, device = setup_DDP(verbose=True)
+
     # initialize dataset
     training_data = datasets.FashionMNIST(root="data", train=True, download=True, transform=ToTensor())
     test_data = datasets.FashionMNIST(root="data", train=False, download=True, transform=ToTensor())
 
     # initialize data loader
-    batch_size = 64
-    train_dataloader = DataLoader(training_data, batch_size=batch_size)
-    test_dataloader = DataLoader(test_data, batch_size=batch_size)
-
-    # [*] Get multiple GPU device for training.
-    n_gpu = torch.cuda.device_count()
-    device = torch.device('cuda:0' if n_gpu > 0 else 'cpu')
-    device_ids = list(range(n_gpu))
+    # [*] using DistributedSampler
+    batch_size = 64 // word_size  # [*] // world_size
+    train_sampler = DistributedSampler(training_data, shuffle=True)  # [*]
+    test_sampler = DistributedSampler(test_data, shuffle=False)  # [*]
+    train_dataloader = DataLoader(training_data, batch_size=batch_size, sampler=train_sampler)  # [*] sampler=...
+    test_dataloader = DataLoader(test_data, batch_size=batch_size, sampler=test_sampler)  # [*] sampler=...
 
     # initialize model
     model = NeuralNetwork().to(device)  # copy model from cpu to gpu
-    # [*] copy model to multi-GPU
-    if len(device_ids) > 1:
-        model = torch.nn.DataParallel(model, device_ids=device_ids)
+    # [*] using DistributedDataParallel
+    model = DDP(model, device_ids=[local_rank], output_device=local_rank)  # [*] DDP(...)
     print(model)
 
     # initialize optimizer
@@ -113,15 +116,18 @@ if __name__ == '__main__':
     # train on multiple-GPU
     epochs = 5
     for t in range(epochs):
+        # [*] set sampler
+        train_dataloader.sampler.set_epoch(t)
+        test_dataloader.sampler.set_epoch(t)
+
         print(f"Epoch {t + 1}\n-------------------------------")
-        train(train_dataloader, model, loss_fn, optimizer)
-        test(test_dataloader, model, loss_fn)
+        train(train_dataloader, model, loss_fn, optimizer, device)
+        test(test_dataloader, model, loss_fn, device)
+
     print("Done!")
 
-    # [*] save model with multi-GPU
-    if isinstance(model, torch.nn.DataParallel):
-        model_state_dict = model.module.state_dict()
-    else:
+    # [*] save model on rank 0
+    if dist.get_rank() == 0:
         model_state_dict = model.state_dict()
-    torch.save(model_state_dict, "model.pth")
-    print("Saved PyTorch Model State to model.pth")
+        torch.save(model_state_dict, "model.pth")
+        print("Saved PyTorch Model State to model.pth")

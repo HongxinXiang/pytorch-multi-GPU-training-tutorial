@@ -44,6 +44,6 @@ after running dist.init_process_group()
 
 **Machine 1:**
 ```bash
-> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr='192.168.1.106' --master_port='12345' train.py
+> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 1 --master_addr='192.168.1.106' --master_port='12345' train.py
 
 ```

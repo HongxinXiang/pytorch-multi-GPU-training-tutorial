@@ -273,3 +273,6 @@ Traceback (most recent call last):
     raise subprocess.CalledProcessError(returncode=last_return_code, cmd=cmd)
 subprocess.CalledProcessError: Command '['/home/hxxiang/anaconda3/envs/pytorch-multi-GPU-training-tutorial/bin/python', '-u', 'wrong_attemp.py', '--local_rank=3']' returned non-zero exit status 1.
 ```
+
+## Error analysis
+The main reason for these errors is communication errors caused by different processes having inconsistent end times.

@@ -12,13 +12,35 @@ import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
 
 
-# [*] Initialize the distributed process group
-def setup(rank, world_size):
-    # If it is running on a single machine, just fill in localhost or 127.0.0.1
-    os.environ['MASTER_ADDR'] = '192.168.1.105'
-    os.environ['MASTER_PORT'] = '12355'
-    # If the OS is macOS, use gloo instead of NCCL
-    dist.init_process_group(backend="NCCL", rank=rank, world_size=world_size)
+"""Start DDP code with "python -m torch.distributed.launch"
+"""
+
+# [*] Initialize the distributed process group and distributed device
+def setup_DDP(backend="nccl", verbose=False):
+    """
+    We don't set ADDR and PORT in here, like:
+        # os.environ['MASTER_ADDR'] = 'localhost'
+        # os.environ['MASTER_PORT'] = '12355'
+    Because program's ADDR and PORT can be given automatically at startup.
+    E.g. You can set ADDR and PORT by using:
+        python -m torch.distributed.launch --master_addr="192.168.1.201" --master_port=23456 ...
+
+    You don't set rank and world_size in dist.init_process_group() explicitly.
+
+    :param backend:
+    :param verbose:
+    :return:
+    """
+    rank = int(os.environ["RANK"])
+    local_rank = int(os.environ["LOCAL_RANK"])
+    # If the OS is Windows or macOS, use gloo instead of nccl
+    dist.init_process_group(backend=backend)
+    # set distributed device
+    torch.cuda.set_device(local_rank)
+    device = torch.device("cuda:{}".format(local_rank))
+    if verbose:
+        print(f"[init] == local rank: {local_rank}, global rank: {rank} ==")
+    return rank, local_rank, device
 
 
 # [*] destroy process group

@@ -6,6 +6,7 @@
 CUDA 10.1
 Python==3.7.3
 PyTorch==1.8.1
+Ubuntu 18.04
 
 
 #### 2. create a new conda environment
@@ -13,8 +14,8 @@ conda create -n pytorch-multi-GPU-training-tutorial python=3.7.3\
 conda activate pytorch-multi-GPU-training-tutorial
 
 #### 3. download some packages
-
-
+pip install https://download.pytorch.org/whl/cu101/torch-1.8.1%2Bcu101-cp37-cp37m-linux_x86_64.whl \
+pip install https://download.pytorch.org/whl/cu101/torchvision-0.9.1%2Bcu101-cp37-cp37m-linux_x86_64.whl
 
 #### Run with single-machine-and-single-GPU.py
 ```bash

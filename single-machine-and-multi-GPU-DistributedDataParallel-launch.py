@@ -79,8 +79,12 @@ def test(dataloader, model, loss_fn, device):
     test_loss /= num_batches
     correct /= size
     # [*] only print log on rank 0
+    print_only_rank0(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+
+
+def print_only_rank0(log):
     if dist.get_rank() == 0:
-        print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+        print(log)
 
 
 if __name__ == '__main__':
@@ -103,7 +107,7 @@ if __name__ == '__main__':
     model = NeuralNetwork().to(device)  # copy model from cpu to gpu
     # [*] using DistributedDataParallel
     model = DDP(model, device_ids=[local_rank], output_device=local_rank)  # [*] DDP(...)
-    print(model)
+    print_only_rank0(model)  # [*]
 
     # initialize optimizer
     loss_fn = nn.CrossEntropyLoss()
@@ -116,11 +120,11 @@ if __name__ == '__main__':
         train_dataloader.sampler.set_epoch(t)
         test_dataloader.sampler.set_epoch(t)
 
-        print(f"Epoch {t + 1}\n-------------------------------")
+        print_only_rank0(f"Epoch {t + 1}\n-------------------------------")  # [*]
         train(train_dataloader, model, loss_fn, optimizer, device)
         test(test_dataloader, model, loss_fn, device)
 
-    print("Done!")
+    print_only_rank0("Done!")  # [*]
 
     # [*] save model on rank 0
     if dist.get_rank() == 0:

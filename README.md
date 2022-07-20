@@ -3,11 +3,10 @@
 ## Environment Installation
 
 #### 1. GPU environment
+Ubuntu 18.04 \
 CUDA 10.1 \
 Python==3.7.3 \
-PyTorch==1.8.1 \
-Ubuntu 18.04 
-
+PyTorch==1.8.1
 
 #### 2. create a new conda environment
 conda create -n pytorch-multi-GPU-training-tutorial python=3.7.3\

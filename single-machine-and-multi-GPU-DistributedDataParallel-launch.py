@@ -39,6 +39,7 @@ def setup_DDP(backend="nccl", verbose=False):
     # set distributed device
     device = torch.device("cuda:{}".format(local_rank))
     if verbose:
+        print("Using device: {}".format(device))
         print(f"local rank: {local_rank}, global rank: {rank}, world size: {word_size}")
     return rank, local_rank, word_size, device
 

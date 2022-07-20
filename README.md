@@ -207,12 +207,12 @@ Saved PyTorch Model State to model.pth
 #### Run with single-machine-and-multi-GPU-DistributedDataParallel-launch.py
 **Machine 0 (master, IP: 192.168.1.105):**
 ```bash
-python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr='192.168.1.105' --master_port='12345' single-machine-and-multi-GPU-DistributedDataParallel-launch.py
+CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr='192.168.1.105' --master_port='12345' single-machine-and-multi-GPU-DistributedDataParallel-launch.py
 
 ```
 
 **Machine 1 (IP: 192.168.1.106):**
 ```bash
-python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 1 --master_addr='192.168.1.105' --master_port='12345' single-machine-and-multi-GPU-DistributedDataParallel-launch.py
+CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 1 --master_addr='192.168.1.105' --master_port='12345' single-machine-and-multi-GPU-DistributedDataParallel-launch.py
 
 ```

@@ -18,7 +18,7 @@ conda activate pytorch-multi-GPU-training-tutorial
 
 #### Run with single-machine-and-single-GPU.py
 ```bash
-> CUDA_AVAILABLE_DEVICES=0 python single-machine-and-single-GPU.py
+> CUDA_VISIBLE_DEVICES=0 python single-machine-and-single-GPU.py
 Using cuda device
 NeuralNetwork(
   (flatten): Flatten(start_dim=1, end_dim=-1)
@@ -43,6 +43,7 @@ loss: 2.229841  [32000/60000]
 
 #### Run with single-machine-and-multi-GPU-DataParallel.py
 ```bash
-> CUDA_AVAILABLE_DEVICES=0,1,2,3 python single-machine-and-multi-GPU-DataParallel.py
+> CUDA_VISIBLE_DEVICES=0,1,2,3 python single-machine-and-multi-GPU-DataParallel.py
+
 
 ```

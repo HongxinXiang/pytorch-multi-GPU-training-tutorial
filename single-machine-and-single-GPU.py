@@ -53,7 +53,7 @@ if __name__ == '__main__':
     test_dataloader = DataLoader(test_data, batch_size=batch_size)
 
     # Get cpu or gpu device for training.
-    device = "cuda" if torch.cuda.is_available() else "cpu"  # using GPU
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"  # using GPU
     print(f"Using {device} device")
 
     # initialize model

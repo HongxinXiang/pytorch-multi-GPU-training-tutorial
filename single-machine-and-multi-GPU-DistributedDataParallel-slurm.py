@@ -1,5 +1,4 @@
 import os
-import argparse
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -9,21 +8,48 @@ from model import NeuralNetwork
 
 # [*] Packages required to import distributed data parallelism
 import torch.distributed as dist
-import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data.distributed import DistributedSampler
+import subprocess
 
+
+"""Start DDP code with "srun --partition=openai -n8 --gres=gpu:8 --ntasks-per-node=8 --job-name=slrum_test"
+"""
 
 # [*] Initialize the distributed process group and distributed device
-def setup_DDP_mp(init_method, local_rank, rank, world_size, backend="nccl", verbose=False):
+def setup_DDP(backend="nccl", port=None, verbose=False):
+    """Initialize slurm distributed training environment.
+    """
+    proc_id = int(os.environ["SLURM_PROCID"])
+    ntasks = int(os.environ["SLURM_NTASKS"])
+    node_list = os.environ["SLURM_NODELIST"]
+    num_gpus = torch.cuda.device_count()
+    addr = subprocess.getoutput(f"scontrol show hostname {node_list} | head -n1")
+    # specify master port
+    if port is not None:
+        os.environ["MASTER_PORT"] = str(port)
+    elif "MASTER_PORT" in os.environ:
+        pass  # use MASTER_PORT in the environment variable
+    else:
+        os.environ["MASTER_PORT"] = "29500"
+    if "MASTER_ADDR" not in os.environ:
+        os.environ["MASTER_ADDR"] = addr
+    os.environ["WORLD_SIZE"] = str(ntasks)
+    os.environ["LOCAL_RANK"] = str(proc_id % num_gpus)
+    os.environ["RANK"] = str(proc_id)
+
+    # The following code is the same as the setup_DDP() code in single-machine-and-multi-GPU-DistributedDataParallel-launch.py
+    rank = int(os.environ["RANK"])
+    local_rank = int(os.environ["LOCAL_RANK"])
+    world_size = int(os.environ["WORLD_SIZE"])
     # If the OS is Windows or macOS, use gloo instead of nccl
-    dist.init_process_group(backend=backend, init_method=init_method, world_size=world_size, rank=rank)
+    dist.init_process_group(backend=backend)
     # set distributed device
     device = torch.device("cuda:{}".format(local_rank))
     if verbose:
         print("Using device: {}".format(device))
         print(f"local rank: {local_rank}, global rank: {rank}, world size: {world_size}")
-    return device
+    return rank, local_rank, world_size, device
 
 
 def train(dataloader, model, loss_fn, optimizer, device):
@@ -69,28 +95,9 @@ def print_only_rank0(log):
         print(log)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--nodes", default=1, type=int, help="number of nodes for distributed training")
-    parser.add_argument("--ngpus_per_node", default=2, type=int, help="number of GPUs per node for distributed training")
-    parser.add_argument("--dist-url", default="tcp://127.0.0.1:12355", type=str, help="url used to set up distributed training")
-    parser.add_argument("--node_rank", default=0, type=int, help="node rank for distributed training")
-    return parser.parse_args()
-
-
-def main(local_rank, ngpus_per_node, args):
-    """
-    :param local_rank: the local_rank is automatically passed in by mp.spawn()
-    :param ngpus_per_node:
-    :param args:
-    :return:
-    """
-    args.local_rank = local_rank
-    args.rank = args.node_rank * ngpus_per_node + local_rank
-
+if __name__ == '__main__':
     # [*] initialize the distributed process group and device
-    device = setup_DDP_mp(init_method=args.dist_url, local_rank=args.local_rank, rank=args.rank,
-                          world_size=args.world_size, verbose=True)
+    rank, local_rank, world_size, device = setup_DDP(verbose=True)
 
     # initialize dataset
     training_data = datasets.FashionMNIST(root="data", train=True, download=True, transform=ToTensor())
@@ -98,7 +105,7 @@ def main(local_rank, ngpus_per_node, args):
 
     # initialize data loader
     # [*] using DistributedSampler
-    batch_size = 64 // args.world_size  # [*] // world_size
+    batch_size = 64 // world_size  # [*] // world_size
     train_sampler = DistributedSampler(training_data, shuffle=True)  # [*]
     test_sampler = DistributedSampler(test_data, shuffle=False)  # [*]
     train_dataloader = DataLoader(training_data, batch_size=batch_size, sampler=train_sampler)  # [*] sampler=...
@@ -107,7 +114,7 @@ def main(local_rank, ngpus_per_node, args):
     # initialize model
     model = NeuralNetwork().to(device)  # copy model from cpu to gpu
     # [*] using DistributedDataParallel
-    model = DDP(model, device_ids=[args.local_rank], output_device=args.local_rank)  # [*] DDP(...)
+    model = DDP(model, device_ids=[local_rank], output_device=local_rank)  # [*] DDP(...)
     print_only_rank0(model)  # [*]
 
     # initialize optimizer
@@ -132,11 +139,3 @@ def main(local_rank, ngpus_per_node, args):
         model_state_dict = model.state_dict()
         torch.save(model_state_dict, "model.pth")
         print("Saved PyTorch Model State to model.pth")
-
-
-if __name__ == '__main__':
-    # [*] initialize some arguments
-    args = parse_args()
-    args.world_size = args.ngpus_per_node * args.nodes
-    # [*] run with torch.multiprocessing
-    mp.spawn(main, nprocs=args.ngpus_per_node, args=(args.ngpus_per_node, args))

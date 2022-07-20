@@ -24,7 +24,7 @@ def setup_DDP_mp(init_method, local_rank, rank, world_size, backend="nccl", verb
     device = torch.device("cuda:{}".format(local_rank))
     if verbose:
         print("Using device: {}".format(device))
-        print(f"local rank: {local_rank}, global rank: {rank}, world size: {word_size}")
+        print(f"local rank: {local_rank}, global rank: {rank}, world size: {world_size}")
     return device
 
 
@@ -99,7 +99,7 @@ def main(local_rank, ngpus_per_node, args):
 
     # initialize data loader
     # [*] using DistributedSampler
-    batch_size = 64 // word_size  # [*] // world_size
+    batch_size = 64 // args.world_size  # [*] // world_size
     train_sampler = DistributedSampler(training_data, shuffle=True)  # [*]
     test_sampler = DistributedSampler(test_data, shuffle=False)  # [*]
     train_dataloader = DataLoader(training_data, batch_size=batch_size, sampler=train_sampler)  # [*] sampler=...
@@ -108,7 +108,7 @@ def main(local_rank, ngpus_per_node, args):
     # initialize model
     model = NeuralNetwork().to(device)  # copy model from cpu to gpu
     # [*] using DistributedDataParallel
-    model = DDP(model, device_ids=[local_rank], output_device=local_rank)  # [*] DDP(...)
+    model = DDP(model, device_ids=[args.local_rank], output_device=args.local_rank)  # [*] DDP(...)
     print_only_rank0(model)  # [*]
 
     # initialize optimizer

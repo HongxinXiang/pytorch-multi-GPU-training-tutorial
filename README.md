@@ -3,10 +3,10 @@
 ## Environment Installation
 
 #### 1. GPU environment
-CUDA 10.1
-Python==3.7.3
-PyTorch==1.8.1
-Ubuntu 18.04
+CUDA 10.1 \
+Python==3.7.3 \
+PyTorch==1.8.1 \
+Ubuntu 18.04 
 
 
 #### 2. create a new conda environment

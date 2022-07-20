@@ -216,75 +216,7 @@ export NCCL_DEBUG_SUBSYS=ALL
 
 **Machine 0 (master, IP: 192.168.1.105):**
 ```bash
-> CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr='192.168.1.105' --master_port='12345' single-machine-and-multi-GPU-DistributedDataParallel-launch.py
-*****************************************
-Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
-*****************************************
-Using device: cuda:2
-local rank: 2, global rank: 2, world size: 8
-Using device: cuda:0
-Using device: cuda:3
-Using device: cuda:1
-local rank: 1, global rank: 1, world size: 8
-local rank: 3, global rank: 3, world size: 8
-local rank: 0, global rank: 0, world size: 8
-tesla-105:40561:40561 [0] NCCL INFO Bootstrap : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-tesla-105:40561:40561 [0] NCCL INFO NET/Plugin : No plugin found (libnccl-net.so), using internal implementation
-
-tesla-105:40561:40561 [0] misc/ibvwrap.cc:63 NCCL WARN Failed to open libibverbs.so[.1]
-tesla-105:40561:40561 [0] NCCL INFO NET/Socket : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-tesla-105:40561:40561 [0] NCCL INFO Using network Socket
-NCCL version 2.7.8+cuda10.1tesla-105:40563:40563 [2] NCCL INFO Bootstrap : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-tesla-105:40562:40562 [1] NCCL INFO Bootstrap : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-
-tesla-105:40562:40562 [1] NCCL INFO NET/Plugin : No plugin found (libnccl-net.so), using internal implementation
-
-tesla-105:40562:40562 [1] misc/ibvwrap.cc:63 NCCL WARN Failed to open libibverbs.so[.1]
-tesla-105:40563:40563 [2] NCCL INFO NET/Plugin : No plugin found (libnccl-net.so), using internal implementation
-
-tesla-105:40563:40563 [2] misc/ibvwrap.cc:63 NCCL WARN Failed to open libibverbs.so[.1]
-tesla-105:40563:40563 [2] NCCL INFO NET/Socket : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-tesla-105:40563:40563 [2] NCCL INFO Using network Socket
-tesla-105:40562:40562 [1] NCCL INFO NET/Socket : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-tesla-105:40562:40562 [1] NCCL INFO Using network Socket
-tesla-105:40565:40565 [3] NCCL INFO Bootstrap : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-tesla-105:40565:40565 [3] NCCL INFO NET/Plugin : No plugin found (libnccl-net.so), using internal implementation
-
-tesla-105:40565:40565 [3] misc/ibvwrap.cc:63 NCCL WARN Failed to open libibverbs.so[.1]
-tesla-105:40565:40565 [3] NCCL INFO NET/Socket : Using [0]eno2:192.168.1.105<0> [1]enp129s0f0:fe80::b4ec:2e7a:3e06:b1d1%enp129s0f0<0>
-tesla-105:40565:40565 [3] NCCL INFO Using network Socket
-tesla-105:40561:885 [0] NCCL INFO Channel 00/02 :    0   1   2   3   4   5   6   7
-tesla-105:40561:885 [0] NCCL INFO Channel 01/02 :    0   1   2   3   4   5   6   7
-tesla-105:40561:885 [0] NCCL INFO threadThresholds 8/8/64 | 64/8/64 | 8/8/64
-tesla-105:40562:887 [1] NCCL INFO threadThresholds 8/8/64 | 64/8/64 | 8/8/64
-tesla-105:40562:887 [1] NCCL INFO Trees [0] 2/4/-1->1->0|0->1->2/4/-1 [1] 2/-1/-1->1->0|0->1->2/-1/-1
-tesla-105:40562:887 [1] NCCL INFO Setting affinity for GPU 1 to 3ff003ff
-tesla-105:40561:885 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1|-1->0->1/-1/-1 [1] 1/-1/-1->0->5|5->0->1/-1/-1
-tesla-105:40561:885 [0] NCCL INFO Setting affinity for GPU 0 to 3ff003ff
-tesla-105:40563:886 [2] NCCL INFO threadThresholds 8/8/64 | 64/8/64 | 8/8/64
-tesla-105:40565:888 [3] NCCL INFO threadThresholds 8/8/64 | 64/8/64 | 8/8/64
-tesla-105:40565:888 [3] NCCL INFO Trees [0] -1/-1/-1->3->2|2->3->-1/-1/-1 [1] -1/-1/-1->3->2|2->3->-1/-1/-1
-tesla-105:40565:888 [3] NCCL INFO Setting affinity for GPU 3 to ff,c00ffc00
-tesla-105:40563:886 [2] NCCL INFO Trees [0] 3/-1/-1->2->1|1->2->3/-1/-1 [1] 3/-1/-1->2->1|1->2->3/-1/-1
-tesla-105:40563:886 [2] NCCL INFO Setting affinity for GPU 2 to ff,c00ffc00
-tesla-105:40562:887 [1] NCCL INFO Channel 00 : 1[1a000] -> 2[af000] via direct shared memory
-tesla-105:40561:885 [0] NCCL INFO Channel 00 : 7[b1000] -> 0[18000] [receive] via NET/Socket/1
-tesla-105:40561:885 [0] NCCL INFO Channel 00 : 0[18000] -> 1[1a000] via P2P/IPC
-tesla-105:40565:888 [3] NCCL INFO Channel 00 : 3[b1000] -> 4[18000] [send] via NET/Socket/1
-tesla-105:40563:886 [2] NCCL INFO Channel 00 : 2[af000] -> 3[b1000] via P2P/IPC
-tesla-105:40563:886 [2] NCCL INFO Channel 00 : 2[af000] -> 1[1a000] via direct shared memory
-tesla-105:40565:888 [3] NCCL INFO Channel 00 : 3[b1000] -> 2[af000] via P2P/IPC
-tesla-105:40565:888 [3] NCCL INFO Channel 01 : 3[b1000] -> 4[18000] [send] via NET/Socket/1
-tesla-105:40562:887 [1] NCCL INFO Channel 00 : 4[18000] -> 1[1a000] [receive] via NET/Socket/1
-tesla-105:40563:886 [2] NCCL INFO Channel 01 : 2[af000] -> 3[b1000] via P2P/IPC
-tesla-105:40562:887 [1] NCCL INFO Channel 00 : 1[1a000] -> 0[18000] via P2P/IPC
-^CKilling subprocess 40561
-Killing subprocess 40562
-Killing subprocess 40563
-Killing subprocess 40565
-Main process received SIGINT, exiting
-^C^C^C
-(pytorch-multi-GPU-training-tutorial) hxxiang@tesla-105:~/xianghongxin/work/pytorch-multi-GPU-training-tutorial$ CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr="192.168.1.105" --master_port=12355 single-machine-and-multi-GPU-DistributedDataParallel-launch.py 
+> CUDA_VISIBLE_DEVICES=0,1,2,3 python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr='192.168.1.105' --master_port='12345' single-machine-and-multi-GPU-DistributedDataParallel-launch.py 
 *****************************************
 Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
 *****************************************

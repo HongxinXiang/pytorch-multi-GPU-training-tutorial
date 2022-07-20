@@ -1,8 +1,3 @@
-```python
-
-
-> 
-`````
 # Run with single-machine-and-single-GPU.py
 ```bash
 > CUDA_VISIBLE_DEVICES=0 python single-machine-and-single-GPU.py

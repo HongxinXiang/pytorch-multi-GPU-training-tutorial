@@ -26,4 +26,4 @@ To run the tutorial, please click the link below:
 
 3. Run [single-machine-and-multi-GPU-DistributedDataParallel-launch.py](https://github.com/HongxinXiang/pytorch-multi-GPU-training-tutorial/blob/master/RUN.md#run-with-single-machine-and-multi-gpu-distributeddataparallel-launchpy)
 
-4. Run [single-machine-and-multi-GPU-DistributedDataParallel-launch.py](https://github.com/HongxinXiang/pytorch-multi-GPU-training-tutorial/blob/master/RUN.md#run-with-single-machine-and-multi-gpu-distributeddataparallel-launchpy)
+4. Run [single-machine-and-multi-GPU-DistributedDataParallel-launch.py](https://github.com/HongxinXiang/pytorch-multi-GPU-training-tutorial/blob/master/RUN.md#run-with-single-machine-and-multi-gpu-distributeddataparallel-mppy)

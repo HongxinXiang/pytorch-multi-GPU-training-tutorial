@@ -77,6 +77,7 @@ def parse_args():
     parser.add_argument("--ngpus_per_node", default=2, type=int, help="number of GPUs per node for distributed training")
     parser.add_argument("--dist-url", default="tcp://127.0.0.1:12355", type=str, help="url used to set up distributed training")
     parser.add_argument("--node_rank", default=0, type=int, help="node rank for distributed training")
+    return parser.parse_args()
 
 
 def main(local_rank, ngpus_per_node, args):

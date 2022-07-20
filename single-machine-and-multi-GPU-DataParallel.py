@@ -56,6 +56,7 @@ if __name__ == '__main__':
     n_gpu = torch.cuda.device_count()
     device = torch.device('cuda:0' if n_gpu > 0 else 'cpu')
     device_ids = list(range(n_gpu))
+    print("n_gpu: {}".format(n_gpu))
 
     # initialize model
     model = NeuralNetwork().to(device)  # copy model from cpu to gpu

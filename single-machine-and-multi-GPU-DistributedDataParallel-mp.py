@@ -1,4 +1,5 @@
 import os
+import argparse
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -8,6 +9,7 @@ from model import NeuralNetwork
 
 # [*] Packages required to import distributed data parallelism
 import torch.distributed as dist
+import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data.distributed import DistributedSampler
 
@@ -15,32 +17,15 @@ from torch.utils.data.distributed import DistributedSampler
 """
 
 # [*] Initialize the distributed process group and distributed device
-def setup_DDP(backend="nccl", verbose=False):
-    """
-    We don't set ADDR and PORT in here, like:
-        # os.environ['MASTER_ADDR'] = 'localhost'
-        # os.environ['MASTER_PORT'] = '12355'
-    Because program's ADDR and PORT can be given automatically at startup.
-    E.g. You can set ADDR and PORT by using:
-        python -m torch.distributed.launch --master_addr="192.168.1.201" --master_port=23456 ...
-
-    You don't set rank and world_size in dist.init_process_group() explicitly.
-
-    :param backend:
-    :param verbose:
-    :return:
-    """
-    rank = int(os.environ["RANK"])
-    local_rank = int(os.environ["LOCAL_RANK"])
-    world_size = int(os.environ["WORLD_SIZE"])
+def setup_DDP_mp(init_method, local_rank, rank, world_size, backend="nccl", verbose=False):
     # If the OS is Windows or macOS, use gloo instead of nccl
-    dist.init_process_group(backend=backend)
+    dist.init_process_group(backend=backend, init_method=init_method, world_size=world_size, rank=rank)
     # set distributed device
     device = torch.device("cuda:{}".format(local_rank))
     if verbose:
         print("Using device: {}".format(device))
-        print(f"local rank: {local_rank}, global rank: {rank}, world size: {world_size}")
-    return rank, local_rank, world_size, device
+        print(f"local rank: {local_rank}, global rank: {rank}, world size: {word_size}")
+    return device
 
 
 def train(dataloader, model, loss_fn, optimizer, device):
@@ -86,9 +71,27 @@ def print_only_rank0(log):
         print(log)
 
 
-if __name__ == '__main__':
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--nodes", default=1, type=int, help="number of nodes for distributed training")
+    parser.add_argument("--ngpus_per_node", default=2, type=int, help="number of GPUs per node for distributed training")
+    parser.add_argument("--dist-url", default="tcp://127.0.0.1:12355", type=str, help="url used to set up distributed training")
+    parser.add_argument("--node_rank", default=0, type=int, help="node rank for distributed training")
+
+
+def main(local_rank, ngpus_per_node, args):
+    """
+    :param local_rank: the local_rank is automatically passed in by mp.spawn()
+    :param ngpus_per_node:
+    :param args:
+    :return:
+    """
+    args.local_rank = local_rank
+    args.rank = args.node_rank * ngpus_per_node + local_rank
+
     # [*] initialize the distributed process group and device
-    rank, local_rank, world_size, device = setup_DDP(verbose=True)
+    device = setup_DDP_mp(init_method=args.dist_url, local_rank=args.local_rank, rank=args.rank,
+                          world_size=args.world_size, verbose=True)
 
     # initialize dataset
     training_data = datasets.FashionMNIST(root="data", train=True, download=True, transform=ToTensor())
@@ -96,7 +99,7 @@ if __name__ == '__main__':
 
     # initialize data loader
     # [*] using DistributedSampler
-    batch_size = 64 // world_size  # [*] // world_size
+    batch_size = 64 // word_size  # [*] // world_size
     train_sampler = DistributedSampler(training_data, shuffle=True)  # [*]
     test_sampler = DistributedSampler(test_data, shuffle=False)  # [*]
     train_dataloader = DataLoader(training_data, batch_size=batch_size, sampler=train_sampler)  # [*] sampler=...
@@ -130,3 +133,11 @@ if __name__ == '__main__':
         model_state_dict = model.state_dict()
         torch.save(model_state_dict, "model.pth")
         print("Saved PyTorch Model State to model.pth")
+
+
+if __name__ == '__main__':
+    # [*] initialize some arguments
+    args = parse_args()
+    args.world_size = args.ngpus_per_node * args.nodes
+    # [*] run with torch.multiprocessing
+    mp.spawn(main, nprocs=args.ngpus_per_node, args=(args.ngpus_per_node, args))

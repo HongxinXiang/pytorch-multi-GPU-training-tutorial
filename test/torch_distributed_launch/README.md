@@ -38,7 +38,7 @@ after running dist.init_process_group()
 # Start with multiple machine and multiple GPU
 **Machine 0:**
 ```bash
-> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr='192.168.1.105' --master_port='12345' train.py
+> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr="192.168.1.105" --master_port=12345 train.py
 *****************************************
 Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
 *****************************************
@@ -62,7 +62,7 @@ after running dist.init_process_group()
 
 **Machine 1:**
 ```bash
-> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 1 --master_addr='192.168.1.105' --master_port='12345' train.py
+> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 1 --master_addr="192.168.1.105" --master_port=12345 train.py
 *****************************************
 Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
 *****************************************
@@ -149,7 +149,7 @@ subprocess.CalledProcessError: Command '['/home/hxxiang/anaconda3/envs/pytorch-m
 ## Run with multiple machine and multiple GPU
 **Machine 0:**
 ```bash
-> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr='192.168.1.105' --master_port='12345' wrong_attemp.py
+> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 0 --master_addr="192.168.1.105" --master_port=12345 wrong_attemp.py
 *****************************************
 Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
 *****************************************
@@ -207,7 +207,7 @@ subprocess.CalledProcessError: Command '['/home/hxxiang/anaconda3/envs/pytorch-m
 
 **Machine 1:**
 ```bash
-> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 1 --master_addr='192.168.1.105' --master_port='12345' wrong_attemp.py
+> python -m torch.distributed.launch --nproc_per_node 4 --nnodes 2 --node_rank 1 --master_addr="192.168.1.105" --master_port=12345 wrong_attemp.py
 *****************************************
 Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
 *****************************************

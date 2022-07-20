@@ -8,7 +8,6 @@ from model import NeuralNetwork
 
 # [*] Packages required to import distributed data parallelism
 import torch.distributed as dist
-import torch.multiprocessing as mp
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data.distributed import DistributedSampler
 

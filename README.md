@@ -1,6 +1,6 @@
 # Multi-GPU training tutorial based on PyTorch
 
-## News
+## News!
 
 [2022/07/23] Chinese blogs are starting to be updated on [闪闪红星闪闪@知乎](https://www.zhihu.com/people/xiang-hong-xin-6)
 

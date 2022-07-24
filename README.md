@@ -41,7 +41,7 @@ To run the tutorial, please click the link below:
 ## Chinese Tutorial ([闪闪红星闪闪@知乎](https://www.zhihu.com/people/xiang-hong-xin-6))
 The following tutorials are being published: 
 1. [PyTorch 多GPU训练实践 (1) - 单机单 GPU](https://zhuanlan.zhihu.com/p/542584557)
-2. PyTorch 多GPU训练实践 (2) - DP 代码修改
+2. [PyTorch 多GPU训练实践 (2) - DP 代码修改](https://zhuanlan.zhihu.com/p/542622592)
 3. PyTorch 多GPU训练实践 (3) - DDP 入门
 4. PyTorch 多GPU训练实践 (4) - DDP 进阶
 5. PyTorch 多GPU训练实践 (5) - DDP-torch.distributed.launch 代码修改

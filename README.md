@@ -42,9 +42,9 @@ To run the tutorial, please click the link below:
 The following tutorials are being published: 
 1. [PyTorch 多GPU训练实践 (1) - 单机单 GPU](https://zhuanlan.zhihu.com/p/542584557)
 2. [PyTorch 多GPU训练实践 (2) - DP 代码修改](https://zhuanlan.zhihu.com/p/542622592)
-3. PyTorch 多GPU训练实践 (3) - DDP 入门
-4. PyTorch 多GPU训练实践 (4) - DDP 进阶
-5. PyTorch 多GPU训练实践 (5) - DDP-torch.distributed.launch 代码修改
+3. [PyTorch 多GPU训练实践 (3) - DDP 入门](https://zhuanlan.zhihu.com/p/543070117)
+4. [PyTorch 多GPU训练实践 (4) - DDP 进阶](https://zhuanlan.zhihu.com/p/543207172)
+5. [PyTorch 多GPU训练实践 (5) - DDP-torch.distributed.launch 代码修改](https://zhuanlan.zhihu.com/p/543198995)
 6. PyTorch 多GPU训练实践 (6) - DDP-torch.multiprocessing 代码修改
 7. PyTorch 多GPU训练实践 (7) - slurm 集群安装
 8. PyTorch 多GPU训练实践 (8) - DDP- slurm 代码修改

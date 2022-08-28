@@ -47,4 +47,4 @@ The following tutorials are being published:
 5. [PyTorch 多GPU训练实践 (5) - DDP-torch.distributed.launch 代码修改](https://zhuanlan.zhihu.com/p/543198995)
 6. [PyTorch 多GPU训练实践 (6) - DDP-torch.multiprocessing 代码修改](https://zhuanlan.zhihu.com/p/544066865)
 7. [PyTorch 多GPU训练实践 (7) - slurm 集群安装](https://zhuanlan.zhihu.com/p/544142315)
-8. PyTorch 多GPU训练实践 (8) - DDP- slurm 代码修改
+8. [PyTorch 多GPU训练实践 (8) - DDP- slurm 代码修改](https://zhuanlan.zhihu.com/p/544196074)

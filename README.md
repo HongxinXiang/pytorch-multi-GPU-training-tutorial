@@ -2,6 +2,8 @@
 
 ## News!
 
+[2022/08/04] Chinese blogs completed
+
 [2022/07/23] Chinese blogs are starting to be updated on [闪闪红星闪闪@知乎](https://www.zhihu.com/people/xiang-hong-xin-6)
 
 [2022/07/20] Repository installation completed
@@ -40,11 +42,12 @@ To run the tutorial, please click the link below:
 
 ## Chinese Tutorial ([闪闪红星闪闪@知乎](https://www.zhihu.com/people/xiang-hong-xin-6))
 The following tutorials are being published: 
-1. [PyTorch 多GPU训练实践 (1) - 单机单 GPU](https://zhuanlan.zhihu.com/p/542584557)
-2. [PyTorch 多GPU训练实践 (2) - DP 代码修改](https://zhuanlan.zhihu.com/p/542622592)
-3. [PyTorch 多GPU训练实践 (3) - DDP 入门](https://zhuanlan.zhihu.com/p/543070117)
-4. [PyTorch 多GPU训练实践 (4) - DDP 进阶](https://zhuanlan.zhihu.com/p/543207172)
-5. [PyTorch 多GPU训练实践 (5) - DDP-torch.distributed.launch 代码修改](https://zhuanlan.zhihu.com/p/543198995)
-6. [PyTorch 多GPU训练实践 (6) - DDP-torch.multiprocessing 代码修改](https://zhuanlan.zhihu.com/p/544066865)
-7. [PyTorch 多GPU训练实践 (7) - slurm 集群安装](https://zhuanlan.zhihu.com/p/544142315)
-8. [PyTorch 多GPU训练实践 (8) - DDP- slurm 代码修改](https://zhuanlan.zhihu.com/p/544196074)
+1. [教程 | PyTorch 多 GPU 训练 - 入门与实践](https://zhuanlan.zhihu.com/p/543116622)
+2. [PyTorch 多GPU训练实践 (1) - 单机单 GPU](https://zhuanlan.zhihu.com/p/542584557)
+3. [PyTorch 多GPU训练实践 (2) - DP 代码修改](https://zhuanlan.zhihu.com/p/542622592)
+4. [PyTorch 多GPU训练实践 (3) - DDP 入门](https://zhuanlan.zhihu.com/p/543070117)
+5. [PyTorch 多GPU训练实践 (4) - DDP 进阶](https://zhuanlan.zhihu.com/p/543207172)
+6. [PyTorch 多GPU训练实践 (5) - DDP-torch.distributed.launch 代码修改](https://zhuanlan.zhihu.com/p/543198995)
+7. [PyTorch 多GPU训练实践 (6) - DDP-torch.multiprocessing 代码修改](https://zhuanlan.zhihu.com/p/544066865)
+8. [PyTorch 多GPU训练实践 (7) - slurm 集群安装](https://zhuanlan.zhihu.com/p/544142315)
+9. [PyTorch 多GPU训练实践 (8) - DDP- slurm 代码修改](https://zhuanlan.zhihu.com/p/544196074)
